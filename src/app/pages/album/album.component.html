@@ -1,8 +1,10 @@
-<!-- <h1 *ngIf="!album">Álbum não encontrado</h1> -->
-<div *ngIf="album">
-	<h1>{{ album.artist }}</h1>
-	<p>{{ album.title }}</p>
+<app-alert></app-alert>
+
+<div class="card" *ngIf="album">
+	<div class="card-body">
+		<h1>{{ album.artist }}</h1>
+		<h2>{{ album.title }}</h2>
+		<p>Criado em {{ album.created_at | customDate }}</p>
+		<p *ngIf="album.updated_at">Editado em {{ album.updated_at | customDate }}</p>
+	</div>
 </div>
-<button type="button" class="btn btn-primary" (click)="goBack()">
-	Voltar
-</button>

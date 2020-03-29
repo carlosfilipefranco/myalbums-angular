@@ -1,0 +1,35 @@
+<app-alert [message]="alert.message" [type]="alert.type" [show]="alert.show"></app-alert>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col" (click)="order('id')">#</th>
+			<th scope="col" (click)="order('artist')">Artista</th>
+			<th scope="col" (click)="order('title')">Título</th>
+			<th scope="col">
+				<button type="button" class="btn btn-outline-success" (click)="add()">
+					Adicionar
+				</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let album of albums">
+			<th scope="row">{{ album.id }}</th>
+			<td>
+				{{ album.artist }}
+			</td>
+			<td>{{ album.title }}</td>
+			<td>
+				<button type="button" class="btn btn-outline-primary btn-sm" (click)="edit(album)">
+					Editar
+				</button>
+				<button type="button" class="btn btn-outline-danger btn-sm" (click)="delete(album)">
+					Apagar
+				</button>
+				<button type="button" class="btn btn-outline-secondary btn-sm" (click)="view(album)">
+					Ver
+				</button>
+			</td>
+		</tr>
+	</tbody>
+</table>

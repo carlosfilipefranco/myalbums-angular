@@ -8,17 +8,19 @@ import { AddModalComponent } from "src/app/components/add-modal/add-modal.compon
 import { Router } from "@angular/router";
 
 @Component({
-	selector: "app-categories",
-	templateUrl: "./categories.component.html",
-	styleUrls: ["./categories.component.scss"]
+	selector: "app-albums",
+	templateUrl: "./albums.component.html",
+	styleUrls: ["./albums.component.scss"]
 })
-export class CategoriesComponent implements OnInit {
+export class AlbumsComponent implements OnInit {
 	alert: {
 		show: boolean;
 		message: string;
 		type: string;
 	};
-	categories: Album[];
+	albums: Album[];
+	selected: string = null;
+	orderAsc: boolean = true;
 	constructor(public albumService: AlbumService, private modalService: NgbModal, private router: Router) {}
 
 	ngOnInit(): void {
@@ -34,10 +36,10 @@ export class CategoriesComponent implements OnInit {
 	load() {
 		this.albumService.index().subscribe(
 			(data: any) => {
-				this.categories = data.data;
+				this.albums = data.data;
 			},
 			() => {
-				this.showAlert("Ocorreu um erro a carregar os álbuns", "danger");
+				this.showAlert("Erro de rede. Tente novamente.", "danger");
 			}
 		);
 	}
@@ -45,19 +47,22 @@ export class CategoriesComponent implements OnInit {
 	delete(album: Album) {
 		const modal = this.modalService.open(AlertModalComponent);
 		modal.componentInstance.title = "Apagar álbum";
-		modal.componentInstance.body = `Tens a certeza que desejas apagar a álbum ${album.artist}?`;
+		modal.componentInstance.body = `Tens a certeza que desejas apagar o álbum ${album.artist}?`;
 		modal.result.then(
 			() => {
 				this.albumService.delete(album.id).subscribe((data: any) => {
 					let type = "danger";
 					if (data.status === "success") {
 						type = "success";
-						this.load();
+						let index = this.findIndexById(album.id);
+						this.albums.splice(index, 1);
 					}
 					this.showAlert(data.message, type);
 				});
 			},
-			() => {}
+			() => {
+				this.showAlert("Erro de rede. Tente novamente.", "danger");
+			}
 		);
 	}
 
@@ -66,25 +71,31 @@ export class CategoriesComponent implements OnInit {
 		modal.componentInstance.album = album;
 		modal.result.then(
 			result => {
-				console.log(result);
 				this.albumService.edit(result).subscribe((data: any) => {
 					let type = "danger";
 					if (data.status === "success") {
 						type = "success";
-						this.load();
+						let index = this.findIndexById(result.id);
+						this.albums[index].artist = result.artist;
+						this.albums[index].title = result.title;
 					}
 					this.showAlert(data.message, type);
 				});
 			},
-			() => {}
+			() => {
+				this.showAlert("Erro de rede. Tente novamente.", "danger");
+			}
 		);
+	}
+
+	findIndexById(id: string): number {
+		return this.albums.findIndex((album: Album) => album.id === id);
 	}
 
 	add() {
 		const modal = this.modalService.open(AddModalComponent);
 		modal.result.then(
 			result => {
-				console.log(result);
 				this.albumService.add(result).subscribe((data: any) => {
 					let type = "danger";
 					if (data.status === "success") {
@@ -94,7 +105,9 @@ export class CategoriesComponent implements OnInit {
 					this.showAlert(data.message, type);
 				});
 			},
-			() => {}
+			() => {
+				this.showAlert("Erro de rede. Tente novamente.", "danger");
+			}
 		);
 	}
 
@@ -103,8 +116,26 @@ export class CategoriesComponent implements OnInit {
 	}
 
 	showAlert(message: string, type: string) {
-		this.alert.show = true;
-		this.alert.message = message;
-		this.alert.type = type;
+		this.alert = {
+			show: true,
+			message,
+			type
+		};
+	}
+
+	order(type: string) {
+		if (type === this.selected) {
+			this.orderAsc = !this.orderAsc;
+		}
+		this.selected = type;
+		this.albums.sort((a, b) => {
+			if (a[type] < b[type]) {
+				return this.orderAsc ? -1 : 1;
+			}
+			if (a[type] > b[type]) {
+				return this.orderAsc ? 1 : -1;
+			}
+			return 0;
+		});
 	}
 }
