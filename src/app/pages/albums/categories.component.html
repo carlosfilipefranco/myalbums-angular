@@ -1,0 +1,35 @@
+<ngb-alert *ngIf="alert.show" [type]="alert.type" (close)="alert.show = false">{{ alert.message }}</ngb-alert>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Artist</th>
+			<th scope="col">Title</th>
+			<th scope="col">
+				<button type="button" class="btn btn-primary" (click)="add()">
+					Adicionar
+				</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let album of categories">
+			<th scope="row">{{ album.id }}</th>
+			<td>
+				{{ album.artist }}
+			</td>
+			<td>{{ album.title }}</td>
+			<td>
+				<button type="button" class="btn btn-primary" (click)="edit(album)">
+					Editar
+				</button>
+				<button type="button" class="btn btn-danger" (click)="delete(album)">
+					Apagar
+				</button>
+				<button type="button" class="btn btn-secondary" (click)="view(album)">
+					Ver
+				</button>
+			</td>
+		</tr>
+	</tbody>
+</table>
