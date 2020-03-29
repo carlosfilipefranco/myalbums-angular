@@ -18,7 +18,6 @@ export class EditModalComponent implements OnInit {
 	};
 
 	ngOnInit(): void {
-		console.log(this.album);
 		this.model.id = this.album.id;
 		this.model.title = this.album.title;
 		this.model.artist = this.album.artist;
